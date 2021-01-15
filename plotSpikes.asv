@@ -1,0 +1,54 @@
+function [windMat,diffVec,topidx1,topidx2]= plotSpikes(signal,peakTimes,sampleFreq,windSize)
+milisec=44;
+windSize=windSize*milisec;
+peakTimes= round(peakTimes.*sampleFreq);
+windMat=[];
+
+figure
+
+for i= 1:length(peakTimes)
+    startWind=peakTimes(i)-(0.5*windSize);
+    endWind=peakTimes(i)+(0.5*windSize);
+    if endWind>length(signal)
+        endWind=length(signal);
+    end
+    if startWind<1
+        startWind=1;
+    end
+    window=signal(startWind:endWind);
+    windMat=[windMat;window];
+    
+    
+    plot([1:length(window)],window);
+    
+    hold on
+end
+% diffVec=[];
+% for i=1:length(windMat(1,:))
+%     timeMean= mean(windMat(:,i));
+%     sumDiff= sum(abs(windMat(:,i)-timeMean));
+%     diffVec= [diffVec,sumDiff];
+% end
+peakPoint=ceil(windSize/2);
+% [~,topidx1]= max(diffVec(peakPoint:end));
+% topidx1=topidx1+peakPoint;
+% [~,topidx2]= max(diffVec(topidx1+10:end));
+% topidx2=topidx2+topidx1+10;
+%c = cluster(windMat,'maxclust',topidx1-2:topidx1+2);
+%d = cluster(windMat,'maxclust',topidx2-2:topidx2+2);
+%T = clusterdata(windMat(1),'3',400)
+
+%%
+stdVec=std(windMat);
+[~,firstMax]= max(stdVec(peakPoint:end));
+[~,mini]=min(stdVec(firstMax:end));
+[~,secMax]=max(stdVec(mini:end));
+figure(100)
+%plot((1:size(windMat,2))/sampleFreq,std(windMat),'.-',(1:size(windMat,2))/sampleFreq,mean(windMat),'.-');grid on
+plot((1:size(windMat,2)),std(windMat),'.-',(1:size(windMat,2)),mean(windMat),'.-');grid on
+figure(101)
+plot(windMat(:,82),windMat(:,54),'o');grid on
+
+
+    
+    
